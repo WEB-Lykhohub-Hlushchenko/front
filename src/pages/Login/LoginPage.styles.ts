@@ -37,3 +37,7 @@ export const LinkText = styled.a`
         text-decoration: underline;
     }
 `;
+
+export const BackgroundImage = styled.img`
+    z-index: 0;
+`;

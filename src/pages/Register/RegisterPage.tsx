@@ -20,7 +20,7 @@ const RegisterPage: React.FC = () => {
             <p>
                 Have an account? <LinkText href="/login">Log in here.</LinkText>
             </p>
-            <Button variant="filled" color="accent" width="100%" borderRadius="6" height="50">Sign up</Button>
+            <Button variant="filled" color="accent" width="100%" borderRadius="16" height="50">Sign up</Button>
         </RegisterFormContainer>
     );
 };
