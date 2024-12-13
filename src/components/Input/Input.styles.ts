@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-export const InputContainer = styled.div`
+export const InputContainer = styled.div<{ width?: string }>`
     position: relative;
-    width: 100%;
-    max-width: 400px;
+    width: ${({ width }) => (width ? width : "100%")};
+    max-width: 100%;
     margin: 20px 0;
 `;
 
@@ -13,25 +13,22 @@ export const StyledInput = styled.input`
     font-size: 16px;
     font-family: "Montserrat", sans-serif;
     font-weight: 400;
-    border: 1px solid var(--accent);
+    border: 2px solid var(--accent);
     border-radius: 16px;
     outline: none;
     background-color: var(--main);
-    color: var(--grey);
-
-    &:focus {
-        border-color: var(--secondary-accent);
-    }
+    color: var(--accent);
 `;
 
 export const Placeholder = styled.label<{ isFocused: boolean }>`
     position: absolute;
     left: 16px;
-    top: ${({ isFocused }) => (isFocused ? "4px" : "50%")};
+    top: ${({ isFocused }) => (isFocused ? "0" : "50%")};
     font-size: ${({ isFocused }) => (isFocused ? "12px" : "16px")};
     font-weight: 400;
     font-family: "Montserrat", sans-serif;
     color: var(--accent);
+    background-color: var(--main);
     pointer-events: none;
     transform: translateY(-50%);
     transition: all 0.3s ease;

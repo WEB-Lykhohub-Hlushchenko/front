@@ -2,24 +2,28 @@ import React, { useState } from "react";
 import { InputContainer, StyledInput, Placeholder } from "./Input.styles";
 
 interface InputProps {
-    label: string;
+    placeholder: string;
+    width?: string;
     type?: string;
+    value?: string;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Input: React.FC<InputProps> = ({ label, type = "text" }) => {
-    const [focused, setFocused] = useState(false);
-    const [value, setValue] = useState("");
+const Input: React.FC<InputProps> = ({ placeholder, width, type = "text", value, onChange }) => {
+    const [isFocused, setIsFocused] = useState(false);
 
     return (
-        <InputContainer>
-            <Placeholder isFocused={focused || value.length > 0}>{label}</Placeholder>
+        <InputContainer width={width}>
             <StyledInput
                 type={type}
                 value={value}
-                onChange={(e) => setValue(e.target.value)}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
+                onChange={onChange}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(value ? true : false)}
             />
+            <Placeholder isFocused={isFocused || Boolean(value)}>
+                {placeholder}
+            </Placeholder>
         </InputContainer>
     );
 };

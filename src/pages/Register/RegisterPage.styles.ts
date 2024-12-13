@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const RegisterFormContainer = styled.div`
-    max-width: 800px;
+    min-width: 600px;
     margin: 0 auto;
     padding: 40px 20px;
     background-color: var(--main);
@@ -14,6 +14,7 @@ export const RegisterFormContainer = styled.div`
         font-size: 36px;
         color: var(--accent);
         margin-bottom: 20px;
+        margin-top: 0;
     }
 
     p {

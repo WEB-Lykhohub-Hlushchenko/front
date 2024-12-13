@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
 export const LoginFormContainer = styled.div`
-    max-width: 800px;
+    min-width: 600px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 20px 20px;
     background-color: var(--main);
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(var(--grey-rgba), 0.2);
@@ -16,6 +16,7 @@ export const LoginFormContainer = styled.div`
         font-size: 36px;
         color: var(--accent);
         margin-bottom: 20px;
+        margin-top: 0;
     }
 
     p {
