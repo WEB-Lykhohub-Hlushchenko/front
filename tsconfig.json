@@ -5,7 +5,9 @@
     "jsx": "react-jsx",
     "moduleResolution": "node",
     "strict": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src"

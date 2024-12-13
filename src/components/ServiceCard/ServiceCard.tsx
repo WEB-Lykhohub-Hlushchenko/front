@@ -9,19 +9,27 @@ import {
     CardDescriptionContainer
 } from './ServiceCard.styles';
 import Button from '../Button/Button';
+import { useNavigate } from 'react-router-dom';
 
 interface ServiceCardProps {
+    id: number; // Додаємо id для ідентифікації сервісу
     name: string;
     description: string;
     img: string;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ name, description, img }) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({ id, name, description, img }) => {
+    const navigate = useNavigate();
+
+    const handleSeeMore = () => {
+        navigate(`/services/${id}`); // Переходить на сторінку сервісу з його id
+    };
+
     return (
         <CardContainer>
             <CardImage src={img} alt={name} />
             <CardTitleContainer>
-            <CardTitle>{name}</CardTitle>
+                <CardTitle>{name}</CardTitle>
             </CardTitleContainer>
             <CardButtonContainer>
                 <Button
@@ -31,12 +39,14 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ name, description, img }) => 
                     borderRadius="16"
                     variant="filled"
                     fontSize="12"
-                    fontWeight="400">
+                    fontWeight="400"
+                    onClick={handleSeeMore} // Додаємо обробник кліку
+                >
                     See more
                 </Button>
             </CardButtonContainer>
             <CardDescriptionContainer>
-            <CardDescription>{description}</CardDescription>
+                <CardDescription>{description}</CardDescription>
             </CardDescriptionContainer>
         </CardContainer>
     );

@@ -15,11 +15,12 @@ const ServicesSection = () => {
     return (
         <Section>
             <BackgroundImage src={require('../../assets/images/services.png')} alt="Branch Background" />
-                <h2>Our Services</h2>
+            <h2>Our Services</h2>
             <ServicesContainer>
                 {services.map((service) => (
                     <ServiceCard
                         key={service.id}
+                        id={service.id}
                         name={service.name}
                         description={service.description}
                         img={service.img}
