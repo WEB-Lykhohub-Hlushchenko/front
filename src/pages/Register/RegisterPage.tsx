@@ -3,7 +3,7 @@ import { RegisterFormContainer, LinkText } from "./RegisterPage.styles";
 import Button from "../../components/Button/Button";
 import Input from "../../components/Input/Input";
 import Dropdown from "../../components/Dropdown/Dropdown";
-import api from "../../api"; // Ваш API-інстанс axios
+import api from "../../api";
 
 const RegisterPage: React.FC = () => {
     const [formData, setFormData] = useState({
