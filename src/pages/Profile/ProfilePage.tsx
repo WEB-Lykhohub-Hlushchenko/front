@@ -10,8 +10,11 @@ import {
 import Header from "../../components/Header/Header";
 import { useAuth } from "../../context/AuthContext";
 
+interface ProfilePageProps {
+    role: string;
+}
 
-const ProfilePage: React.FC = () => {
+const ProfilePage: React.FC<ProfilePageProps> = ({ role }) => {
     const { isAuthenticated } = useAuth();
 
     // Тимчасові дані для профілю та записів

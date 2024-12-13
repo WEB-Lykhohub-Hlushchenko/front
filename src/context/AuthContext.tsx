@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 
 interface AuthContextProps {
     role: string; // Роль користувача
-    setRole: (role: string) => void; // Функція для зміни ролі
+    setRole: (role: string) => void;
     isAuthenticated: boolean;
     setIsAuthenticated: (value: boolean) => void;
 }
