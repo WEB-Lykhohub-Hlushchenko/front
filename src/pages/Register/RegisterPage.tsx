@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { RegisterFormContainer, LinkText } from "./RegisterPage.styles";
 import Button from "../../components/Button/Button";
-import Input from "../../components/Input/Input";
+import CustomInput from "../../components/Input/CustomInput"; // Використовуй обгорнутий Input
 import Dropdown from "../../components/Dropdown/Dropdown";
 import api from "../../api";
 
@@ -43,7 +43,7 @@ const RegisterPage: React.FC = () => {
     return (
         <RegisterFormContainer>
             <h2>Register</h2>
-            <Input
+            <CustomInput
                 placeholder="Email"
                 type="email"
                 name="email"
@@ -51,7 +51,7 @@ const RegisterPage: React.FC = () => {
                 onChange={handleInputChange}
                 width="100%"
             />
-            <Input
+            <CustomInput
                 placeholder="Password"
                 type="password"
                 name="password"
@@ -59,7 +59,7 @@ const RegisterPage: React.FC = () => {
                 onChange={handleInputChange}
                 width="100%"
             />
-            <Input
+            <CustomInput
                 placeholder="First name"
                 type="text"
                 name="first_name"
@@ -67,7 +67,7 @@ const RegisterPage: React.FC = () => {
                 onChange={handleInputChange}
                 width="100%"
             />
-            <Input
+            <CustomInput
                 placeholder="Last name"
                 type="text"
                 name="last_name"
@@ -75,7 +75,7 @@ const RegisterPage: React.FC = () => {
                 onChange={handleInputChange}
                 width="100%"
             />
-            <Input
+            <CustomInput
                 placeholder="Phone"
                 type="tel"
                 name="phone"
@@ -83,7 +83,7 @@ const RegisterPage: React.FC = () => {
                 onChange={handleInputChange}
                 width="100%"
             />
-            <Input
+            <CustomInput
                 placeholder="Date of birth"
                 type="date"
                 name="date_of_birth"

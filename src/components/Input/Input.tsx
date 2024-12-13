@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { InputContainer, StyledInput, Placeholder } from "./Input.styles";
 
 interface InputProps {
-    placeholder: string;
+    placeholder?: string;
     width?: string;
     type?: string;
     value?: string;

@@ -29,7 +29,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ role }) => {
         service: "Nails",
         specialist: "Anna Bennet",
         date: "27 November, 13:00",
-        image: require("../../assets/images/face-specialist1.jpg"),
     });
 
     const handleCancel = (index: number) => {
@@ -53,7 +52,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ role }) => {
             <ProfilePageContainer>
                 {/* Інформація про клієнта */}
                 <ProfileInfo>
-                    <img src={require("../../assets/images/face-specialist1.jpg")} alt="Profile" />
                     <h2>{profileData.name}</h2>
                     <p>{profileData.age} years</p>
                     <p>{profileData.phone}</p>

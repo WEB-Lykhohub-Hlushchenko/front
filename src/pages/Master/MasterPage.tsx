@@ -20,7 +20,6 @@ const MasterPage: React.FC = () => {
         specialty: "Nails",
         about: "With over 8 years of experience, Anna specializes in nail art and creative designs. She's known for her attention to detail and uses high-quality products to ensure nails are both beautiful and healthy.",
         rating: 4.8,
-        image: require("../../assets/images/face-specialist1.jpg"),
         availableTimes: [
             "08:00", "09:00", "10:00", "11:00", "12:00",
             "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00",
@@ -46,7 +45,6 @@ const MasterPage: React.FC = () => {
             <MasterPageContainer>
                 {/* Інформація про майстра */}
                 <MasterInfo>
-                    <img src={master.image} alt={master.name} />
                     <div>
                         <h2>{master.name}</h2>
                         <p><strong>Age:</strong> {master.age}</p>
