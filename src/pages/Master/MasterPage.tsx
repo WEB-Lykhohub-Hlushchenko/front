@@ -8,7 +8,6 @@ import {
     AppointmentDetails,
 } from "./MasterPage.styles";
 import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
 import { useAuth } from "../../context/AuthContext";
 
 const MasterPage: React.FC = () => {
@@ -89,7 +88,6 @@ const MasterPage: React.FC = () => {
                     </AppointmentDetails>
                 )}
             </MasterPageContainer>
-            <Footer />
         </>
     );
 };

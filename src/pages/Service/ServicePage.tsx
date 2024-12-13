@@ -11,7 +11,6 @@ import {
 } from "./ServicePage.styles";
 import { servicesData } from "../../data/servicesData";
 import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
 import { useAuth } from "../../context/AuthContext";
 
 const ServicePage: React.FC = () => {
@@ -65,8 +64,6 @@ const ServicePage: React.FC = () => {
                     ))}
                 </SpecialistContainer>
             </ServicePageContainer>
-
-            <Footer />
         </>
     );
 };
