@@ -11,6 +11,7 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { useAuth } from "../../context/AuthContext";
 
+
 const ProfilePage: React.FC = () => {
     const { isAuthenticated } = useAuth();
 
