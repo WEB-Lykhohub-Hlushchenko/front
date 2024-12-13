@@ -3,12 +3,15 @@
     "target": "ES5",
     "lib": ["dom", "es2015"],
     "jsx": "react-jsx",
+    "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./src"
   },
   "include": [
-    "src"
-  ]
+    "src/**/*",
+  ],
+  "exclude": ["node_modules"]
 }
