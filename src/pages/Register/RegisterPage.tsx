@@ -4,6 +4,7 @@ import Button from "../../components/Button/Button";
 import CustomInput from "../../components/Input/CustomInput";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import api from "../../api";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
     email: string;
@@ -49,7 +50,8 @@ const RegisterPage: React.FC = () => {
 
     const [isFormValid, setIsFormValid] = useState(false);
 
-    // Поле для валідації значень форми
+    const navigate = useNavigate();
+
     const validateField = (name: string, value: string) => {
         let error = "";
 
@@ -92,7 +94,6 @@ const RegisterPage: React.FC = () => {
         setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
     };
 
-    // Обробка змін у полях форми
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -103,19 +104,29 @@ const RegisterPage: React.FC = () => {
         validateField(name, value);
     };
 
-    // Обробка вибору ролі
     const handleDropdownChange = (selected: string) => {
         setFormData((prevData) => ({ ...prevData, role: selected }));
         validateField("role", selected);
     };
 
-    // Відправка даних на бекенд
     const handleRegister = async () => {
         if (!isFormValid) return;
 
         try {
             const response = await api.post("/auth/register", formData);
             console.log("Registration successful:", response.data);
+
+            // Очищення полів після успішної реєстрації
+            setFormData({
+                email: "",
+                password: "",
+                first_name: "",
+                last_name: "",
+                phone: "",
+                date_of_birth: "",
+                role: "",
+            });
+
             setErrors({
                 email: "",
                 password: "",
@@ -125,7 +136,9 @@ const RegisterPage: React.FC = () => {
                 date_of_birth: "",
                 role: "",
             });
-            window.location.href = "/login";
+
+            // Перенаправлення на головну сторінку
+            navigate("/");
         } catch (error: any) {
             console.error("Registration error:", error.response?.data);
             setErrors((prevErrors) => ({
@@ -135,7 +148,6 @@ const RegisterPage: React.FC = () => {
         }
     };
 
-    // Валідація форми при зміні `formData` або `errors`
     useEffect(() => {
         const hasErrors = Object.values(errors).some((error) => error !== "");
         const hasEmptyFields = Object.values(formData).some((value) => value === "");
@@ -152,7 +164,7 @@ const RegisterPage: React.FC = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 width="100%"
-                error={errors.email} // Передача помилки для відображення
+                error={errors.email}
             />
             <CustomInput
                 placeholder="Password"
