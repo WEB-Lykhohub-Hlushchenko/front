@@ -6,7 +6,7 @@ import {
     Option,
     Icon,
 } from "./Dropdown.styles";
-import { FaChevronDown, FaTimes } from "react-icons/fa"; // Використання іконок
+import { FaChevronDown, FaTimes } from "react-icons/fa";
 
 interface DropdownProps {
     options: string[];

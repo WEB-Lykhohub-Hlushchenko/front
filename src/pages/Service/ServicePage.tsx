@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     ServicePageContainer,
@@ -9,50 +9,15 @@ import {
     SpecialistCard,
     SeeMoreButton,
 } from "./ServicePage.styles";
-import axios from "axios";
+import { servicesData } from "../../data/servicesData";
 import Header from "../../components/Header/Header";
 import { useAuth } from "../../context/AuthContext";
-
-interface Specialist {
-    id: string;
-    name: string;
-    age: number;
-    image: string;
-    // rating?: number; // Додайте, якщо необхідно
-}
-
-interface Service {
-    id: string;
-    title: string;
-    description: string;
-    details: string[];
-    specialists: Specialist[];
-}
 
 const ServicePage: React.FC = () => {
     const { serviceId } = useParams<{ serviceId: string }>();
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
-    const [service, setService] = useState<Service | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        // Завантаження даних про конкретну послугу з бекенду
-        axios
-            .get(`http://127.0.0.1:5000/api/services/${serviceId}`) // API-ендпоінт
-            .then((response) => {
-                setService(response.data); // Передбачається, що бекенд повертає один об'єкт послуги
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching service data:", error);
-                setLoading(false);
-            });
-    }, [serviceId]);
-
-    if (loading) {
-        return <p>Loading...</p>;
-    }
+    const service = servicesData[serviceId as keyof typeof servicesData];
 
     if (!service) {
         return <p>Service not found</p>;
@@ -67,10 +32,9 @@ const ServicePage: React.FC = () => {
             <Header isAuthenticated={isAuthenticated} />
 
             <ServicePageContainer>
-                <BackgroundImage
-                    src={require("../../assets/images/services-background.jpg")}
-                    alt="Background"
-                />
+                <BackgroundImage>
+                    <img src={require("../../assets/images/services-background.jpg")}/>
+                </BackgroundImage>
 
                 <ServiceHeader>
                     <h1>{service.title}</h1>
@@ -79,20 +43,20 @@ const ServicePage: React.FC = () => {
                 <ServiceDescriptionBox>
                     <p>{service.description}</p>
                     <ul>
-                        {service.details.map((detail, index) => (
+                        {service.details.map((detail: string, index: number) => (
                             <li key={index}>{detail}</li>
                         ))}
                     </ul>
                 </ServiceDescriptionBox>
 
                 <SpecialistContainer>
-                    {service.specialists.map((specialist) => (
-                        <SpecialistCard key={specialist.id}>
+                    {service.specialists.map((specialist, index) => (
+                        <SpecialistCard key={index}>
                             <img src={specialist.image} alt={specialist.name} />
                             <h3>{specialist.name}</h3>
                             <p>{specialist.age} years</p>
                             {/*<p>Rating: {specialist.rating} ❤️</p>*/}
-                            <SeeMoreButton onClick={() => handleSeeMoreClick(specialist.id)}>
+                            <SeeMoreButton onClick={() => handleSeeMoreClick(specialist.name)}>
                                 See more
                             </SeeMoreButton>
                         </SpecialistCard>

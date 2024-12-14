@@ -11,11 +11,11 @@ import NewsFaqPage from "../NewsFaq/NewsFaqPage";
 import Footer from "../Footer/Footer";
 import Header from "../Header/Header";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // Використання контексту авторизації
+import { useAuth } from "../../context/AuthContext";
 
 const MainPage: React.FC = () => {
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth(); // Отримуємо стан авторизації
+    const { isAuthenticated } = useAuth();
 
     return (
         <>
@@ -49,7 +49,7 @@ const MainPage: React.FC = () => {
                             variant="filled"
                             fontSize="16"
                             fontWeight="400"
-                            onClick={() => navigate("/services")} // Перехід на сторінку сервісів
+                            onClick={() => navigate("/services")}
                         >
                             See more
                         </Button>

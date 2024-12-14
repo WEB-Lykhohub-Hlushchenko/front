@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { RegisterFormContainer, LinkText } from "./RegisterPage.styles";
 import Button from "../../components/Button/Button";
-import CustomInput from "../../components/Input/CustomInput"; // Використовуй обгорнутий Input
+import CustomInput from "../../components/Input/CustomInput";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import api from "../../api";
 

@@ -70,11 +70,6 @@ export const Option = styled.li`
     font-weight: 400;
     color: var(--grey);
     cursor: pointer;
-
-    &:hover {
-        background-color: var(--secondary-accent);
-        color: var(--main);
-    }
 `;
 
 export const Icon = styled.div`

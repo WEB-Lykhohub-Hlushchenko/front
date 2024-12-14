@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import backgroundImg from '../../assets/images/services-background.jpg';
 
 export const ServicePageContainer = styled.div`
   position: relative;
