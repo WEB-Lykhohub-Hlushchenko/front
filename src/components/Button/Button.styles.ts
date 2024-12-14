@@ -8,6 +8,8 @@ interface ButtonProps {
     color: 'accent' | 'yellow' | 'red';
     fontSize?: '16' | '14' | '12'; // Розмір шрифту
     fontWeight?: '500' | '400'; // Вага шрифту
+    disabled?: boolean;
+    onClick?: () => void;
 }
 
 export const ButtonBase = styled.button<ButtonProps>`
@@ -18,24 +20,19 @@ export const ButtonBase = styled.button<ButtonProps>`
     cursor: pointer;
     transition: all 0.3s ease;
 
-    /* Розміри кнопки */
     width: ${({ width }) => width || 'auto'};
     height: ${({ height }) => `${height}px`};
 
-    /* Border-radius */
     border-radius: ${({ borderRadius }) =>
             borderRadius === '25' ? '25px' :
                     borderRadius === '16' ? '16px' : '6px'};
 
-    /* Розмір шрифту */
     font-size: ${({ fontSize }) =>
             fontSize === '16' ? '16px' :
                     fontSize === '14' ? '14px' : '12px'};
 
-    /* Вага шрифту */
     font-weight: ${({ fontWeight }) => fontWeight || '500'};
 
-    /* Варіант кнопки */
     ${({ variant, color }) =>
             variant === 'filled' &&
             `
@@ -59,5 +56,16 @@ export const ButtonBase = styled.button<ButtonProps>`
             background-color: var(--${color});
             color: var(--main);
         }
+    `}
+
+        // Стиль для неактивного стану
+    ${({ disabled }) =>
+            disabled &&
+            `
+        cursor: not-allowed;
+        background-color: rgba(var(--grey-rgba), 0.3);
+        color: var(--grey);
+        border: 2px solid var(--grey);
+        opacity: 0.7;
     `}
 `;

@@ -10,6 +10,7 @@ interface ButtonProps {
     color: 'accent' | 'yellow' | 'red';
     fontSize?: '16' | '14' | '12';
     fontWeight?: '500' | '400';
+    disabled?: boolean;
     onClick?: () => void;
 }
 
