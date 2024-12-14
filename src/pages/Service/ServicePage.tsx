@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // Додано useNavigate
 import {
     ServicePageContainer,
     BackgroundImage,
@@ -32,6 +32,7 @@ const ServicePage: React.FC = () => {
     const { serviceId } = useParams<{ serviceId: string }>();
     const [service, setService] = useState<Service | null>(null);
     const { isAuthenticated } = useAuth();
+    const navigate = useNavigate(); // Для перенаправлення
 
     useEffect(() => {
         const fetchService = async () => {
@@ -68,7 +69,8 @@ const ServicePage: React.FC = () => {
                             <h3>{specialist.name}</h3>
                             <p>Age: {specialist.age}</p>
                             <p>{specialist.bio}</p>
-                            <SeeMoreButton onClick={() => console.log(`View specialist ${specialist.id}`)}>
+                            {/* Оновлено логіку кнопки */}
+                            <SeeMoreButton onClick={() => navigate(`/masters/${specialist.id}`)}>
                                 See more
                             </SeeMoreButton>
                         </SpecialistCard>
