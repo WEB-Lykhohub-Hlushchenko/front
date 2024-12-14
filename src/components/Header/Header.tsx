@@ -4,7 +4,7 @@ import Button from "../Button/Button";
 import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
-    isAuthenticated: boolean;
+    isAuthenticated: boolean; // Додаємо цей проп
 }
 
 const Header: React.FC<HeaderProps> = ({ isAuthenticated }) => {
@@ -13,12 +13,10 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated }) => {
     return (
         <HeaderContainer>
             <Logo onClick={() => navigate("/")}>
-                HarmonyStudio {/* Лого як текст */}
+                HarmonyStudio
             </Logo>
             <Nav>
-                {/* Навігація по головній сторінці */}
                 <NavLink onClick={() => navigate("/")}>Home</NavLink>
-                {/* Перевірка авторизації */}
                 {isAuthenticated ? (
                     <NavLink onClick={() => navigate("/profile")}>My profile</NavLink>
                 ) : (

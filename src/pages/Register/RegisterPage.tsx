@@ -5,6 +5,13 @@ import CustomInput from "../../components/Input/CustomInput";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
+interface Service {
+    id: number;
+    name: string;
+    description: string;
+}
 
 interface FormData {
     email: string;
@@ -14,6 +21,7 @@ interface FormData {
     phone_number: string;
     date_of_birth: string;
     role: string;
+    service_id?: string;
 }
 
 interface Errors {
@@ -24,6 +32,7 @@ interface Errors {
     phone_number: string;
     date_of_birth: string;
     role: string;
+    service_id: string;
     global?: string;
 }
 
@@ -36,8 +45,10 @@ const RegisterPage: React.FC = () => {
         phone_number: "",
         date_of_birth: "",
         role: "",
+        service_id: "",
     });
 
+    const [services, setServices] = useState<Service[]>([]);
     const [errors, setErrors] = useState<Errors>({
         email: "",
         password: "",
@@ -46,11 +57,28 @@ const RegisterPage: React.FC = () => {
         phone_number: "",
         date_of_birth: "",
         role: "",
+        service_id: "",
+        global: "",
     });
 
     const [isFormValid, setIsFormValid] = useState(false);
-
+    const [loading, setLoading] = useState(false); // Стан завантаження
     const navigate = useNavigate();
+    const { setIsAuthenticated, setRole } = useAuth(); // Оновлення глобального контексту
+
+    // Завантаження сервісів
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await api.get("/services/");
+                setServices(response.data);
+            } catch (error) {
+                console.error("Failed to fetch services", error);
+            }
+        };
+
+        fetchServices();
+    }, []);
 
     const validateField = (name: string, value: string) => {
         let error = "";
@@ -96,11 +124,7 @@ const RegisterPage: React.FC = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-
+        setFormData((prevData) => ({ ...prevData, [name]: value }));
         validateField(name, value);
     };
 
@@ -109,14 +133,18 @@ const RegisterPage: React.FC = () => {
         validateField("role", selected);
     };
 
+    const handleServiceChange = (selectedServiceId: string) => {
+        setFormData((prevData) => ({ ...prevData, service_id: selectedServiceId }));
+    };
+
     const handleRegister = async () => {
         if (!isFormValid) return;
 
+        setLoading(true); // Увімкнути стан завантаження
         try {
             const response = await api.post("/auth/register", formData);
             console.log("Registration successful:", response.data);
 
-            // Очищення полів після успішної реєстрації
             setFormData({
                 email: "",
                 password: "",
@@ -125,6 +153,7 @@ const RegisterPage: React.FC = () => {
                 phone_number: "",
                 date_of_birth: "",
                 role: "",
+                service_id: "",
             });
 
             setErrors({
@@ -135,9 +164,14 @@ const RegisterPage: React.FC = () => {
                 phone_number: "",
                 date_of_birth: "",
                 role: "",
+                service_id: "",
+                global: "",
             });
 
-            // Перенаправлення на головну сторінку
+            // Оновлення контексту після успішної реєстрації
+            setIsAuthenticated(true);
+            setRole(formData.role);
+
             navigate("/");
         } catch (error: any) {
             console.error("Registration error:", error.response?.data);
@@ -145,6 +179,8 @@ const RegisterPage: React.FC = () => {
                 ...prevErrors,
                 global: error.response?.data?.error || "Registration failed",
             }));
+        } finally {
+            setLoading(false); // Вимкнути стан завантаження
         }
     };
 
@@ -212,10 +248,24 @@ const RegisterPage: React.FC = () => {
                 error={errors.date_of_birth}
             />
             <Dropdown
-                options={["master", "client"]}
+                options={[
+                    { label: "Master", value: "master" },
+                    { label: "Client", value: "client" },
+                ]}
                 value={formData.role}
                 onChange={handleDropdownChange}
             />
+
+            {formData.role === "master" && (
+                <Dropdown
+                    options={services.map((service) => ({
+                        label: service.name,
+                        value: service.id.toString(),
+                    }))}
+                    value={formData.service_id || ""}
+                    onChange={handleServiceChange}
+                />
+            )}
             {errors.global && <p style={{ color: "red" }}>{errors.global}</p>}
             <p>
                 Have an account? <LinkText href="/login">Log in here.</LinkText>
@@ -227,9 +277,9 @@ const RegisterPage: React.FC = () => {
                 borderRadius="16"
                 height="50"
                 onClick={handleRegister}
-                disabled={!isFormValid}
+                disabled={!isFormValid || loading}
             >
-                Sign up
+                {loading ? "Registering..." : "Sign up"}
             </Button>
         </RegisterFormContainer>
     );

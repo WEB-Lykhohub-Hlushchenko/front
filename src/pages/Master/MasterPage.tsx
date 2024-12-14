@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     MasterPageContainer,
     MasterInfo,
@@ -9,24 +9,39 @@ import {
 } from "./MasterPage.styles";
 import Header from "../../components/Header/Header";
 import { useAuth } from "../../context/AuthContext";
+import { useParams } from "react-router-dom";
+
+interface Master {
+    id: string;
+    name: string;
+    age: number;
+    specialty: string;
+    about: string;
+    rating: number;
+    availableTimes: string[];
+    address: string;
+}
 
 const MasterPage: React.FC = () => {
     const { isAuthenticated } = useAuth();
-
-    // Дані про майстра
-    const master = {
-        name: "Anna Bennett",
-        age: 26,
-        specialty: "Nails",
-        about: "With over 8 years of experience, Anna specializes in nail art and creative designs. She's known for her attention to detail and uses high-quality products to ensure nails are both beautiful and healthy.",
-        rating: 4.8,
-        availableTimes: [
-            "08:00", "09:00", "10:00", "11:00", "12:00",
-            "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00",
-        ],
-    };
-
+    const { masterId } = useParams<{ masterId: string }>();
+    const [master, setMaster] = useState<Master | null>(null);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Запит даних майстра з API
+        const fetchMaster = async () => {
+            try {
+                const response = await fetch(`/api/masters/${masterId}`);
+                const data = await response.json();
+                setMaster(data);
+            } catch (error) {
+                console.error("Error fetching master data:", error);
+            }
+        };
+
+        fetchMaster();
+    }, [masterId]);
 
     const handleTimeSelect = (time: string) => {
         setSelectedTime(time);
@@ -34,10 +49,14 @@ const MasterPage: React.FC = () => {
 
     const handleAppointment = () => {
         if (selectedTime) {
-            console.log(`Appointment confirmed at ${selectedTime}`);
             alert(`You are successfully booked at ${selectedTime}`);
+            console.log(`Appointment confirmed at ${selectedTime}`);
         }
     };
+
+    if (!master) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <>
@@ -48,7 +67,7 @@ const MasterPage: React.FC = () => {
                     <div>
                         <h2>{master.name}</h2>
                         <p><strong>Age:</strong> {master.age}</p>
-                        <p><strong>Speciality:</strong> {master.specialty}</p>
+                        <p><strong>Specialty:</strong> {master.specialty}</p>
                         <p><strong>Rating:</strong> {master.rating} ❤️</p>
                         <p>{master.about}</p>
                     </div>
@@ -77,7 +96,7 @@ const MasterPage: React.FC = () => {
                 {selectedTime && (
                     <AppointmentDetails>
                         <h3>Information about appointment:</h3>
-                        <p><strong>Address:</strong> 123 Maple Street</p>
+                        <p><strong>Address:</strong> {master.address}</p>
                         <p><strong>Date and time:</strong> 27 November, {selectedTime}</p>
                         <p>
                             By clicking "Make an Appointment," you agree to Harmony Studio's

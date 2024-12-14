@@ -30,15 +30,15 @@ export const BackgroundImage = styled.img`
   width: 100%;
   height: 100%;
   z-index: 0;
-  object-fit: cover; 
-  pointer-events: none; 
+  object-fit: cover;
+  pointer-events: none;
 `;
 
 export const ServiceHeader = styled.div`
   text-align: center;
   margin-bottom: 20px;
   position: relative;
-  z-index: 2; 
+  z-index: 2;
 
   h1 {
     font-family: "Montserrat", sans-serif;
@@ -48,14 +48,14 @@ export const ServiceHeader = styled.div`
 `;
 
 export const ServiceDescriptionBox = styled.div`
-  background-color: rgba(255, 255, 255, 0.8); 
-  border-radius: 10px; 
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
   padding: 20px;
   margin: 20px auto;
   max-width: 800px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
-  z-index: 2; 
+  z-index: 2;
   text-align: left;
 
   p {
@@ -80,9 +80,9 @@ export const ServiceDescriptionBox = styled.div`
 `;
 
 export const SpecialistContainer = styled.div`
-  display: flex; 
+  display: flex;
   overflow-x: auto;
-  scroll-snap-type: x mandatory; 
+  scroll-snap-type: x mandatory;
   gap: 20px;
   padding: 20px 0;
   margin: 0 auto;
@@ -102,7 +102,7 @@ export const SpecialistContainer = styled.div`
   & > div {
     scroll-snap-align: center;
     flex-shrink: 0;
-    width: 250px; 
+    width: 250px;
     text-align: center;
   }
 `;

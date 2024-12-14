@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     DropdownContainer,
     InputField,
@@ -8,8 +8,13 @@ import {
 } from "./Dropdown.styles";
 import { FaChevronDown, FaTimes } from "react-icons/fa";
 
+interface DropdownOption {
+    label: string;
+    value: string;
+}
+
 interface DropdownProps {
-    options: string[];
+    options: DropdownOption[];
     value: string;
     onChange: (value: string) => void;
     width?: string;
@@ -17,11 +22,35 @@ interface DropdownProps {
 
 const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, width }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [inputValue, setInputValue] = useState(value);
+    const [inputValue, setInputValue] = useState(
+        options.find((option) => option.value === value)?.label || ""
+    );
 
-    const handleSelect = (option: string) => {
-        setInputValue(option);
-        onChange(option);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Синхронізація value та inputValue
+    useEffect(() => {
+        const selectedOption = options.find((option) => option.value === value);
+        setInputValue(selectedOption ? selectedOption.label : "");
+    }, [value, options]);
+
+    // Закриття списку при кліку поза компонентом
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const handleSelect = (option: DropdownOption) => {
+        setInputValue(option.label); // Встановлюємо відображуване значення
+        onChange(option.value); // Передаємо тільки value
         setIsOpen(false);
     };
 
@@ -29,26 +58,32 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, width }) 
         setIsOpen(!isOpen);
     };
 
+    const filteredOptions = options.filter((option) =>
+        option.label.toLowerCase().includes(inputValue.toLowerCase())
+    );
+
     return (
-        <DropdownContainer width={width}>
+        <DropdownContainer width={width} ref={dropdownRef}>
             <InputField
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onFocus={() => setIsOpen(true)}
+                placeholder="Select an option"
             />
-            <Icon onClick={toggleDropdown} className={isOpen ? "rotate" : ""}>
+            <Icon onClick={toggleDropdown}>
                 {isOpen ? <FaTimes /> : <FaChevronDown />}
             </Icon>
-            <OptionsList isOpen={isOpen}>
-                {options
-                    .filter((option) => option.toLowerCase().includes(inputValue.toLowerCase()))
-                    .map((option, index) => (
-                        <Option key={index} onClick={() => handleSelect(option)}>
-                            {option}
+            {isOpen && (
+                <OptionsList isOpen={isOpen}>
+                    {filteredOptions.map((option) => (
+                        <Option key={option.value} onClick={() => handleSelect(option)}>
+                            {option.label}
                         </Option>
                     ))}
-            </OptionsList>
+                </OptionsList>
+
+            )}
         </DropdownContainer>
     );
 };
