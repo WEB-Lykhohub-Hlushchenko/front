@@ -11,7 +11,7 @@ interface FormData {
     password: string;
     first_name: string;
     last_name: string;
-    phone: string;
+    phone_number: string;
     date_of_birth: string;
     role: string;
 }
@@ -21,7 +21,7 @@ interface Errors {
     password: string;
     first_name: string;
     last_name: string;
-    phone: string;
+    phone_number: string;
     date_of_birth: string;
     role: string;
     global?: string;
@@ -33,7 +33,7 @@ const RegisterPage: React.FC = () => {
         password: "",
         first_name: "",
         last_name: "",
-        phone: "",
+        phone_number: "",
         date_of_birth: "",
         role: "",
     });
@@ -43,7 +43,7 @@ const RegisterPage: React.FC = () => {
         password: "",
         first_name: "",
         last_name: "",
-        phone: "",
+        phone_number: "",
         date_of_birth: "",
         role: "",
     });
@@ -72,7 +72,7 @@ const RegisterPage: React.FC = () => {
                     error = "This field is required";
                 }
                 break;
-            case "phone":
+            case "phone_number":
                 if (!/^\d{10,15}$/.test(value)) {
                     error = "Invalid phone number";
                 }
@@ -122,7 +122,7 @@ const RegisterPage: React.FC = () => {
                 password: "",
                 first_name: "",
                 last_name: "",
-                phone: "",
+                phone_number: "",
                 date_of_birth: "",
                 role: "",
             });
@@ -132,7 +132,7 @@ const RegisterPage: React.FC = () => {
                 password: "",
                 first_name: "",
                 last_name: "",
-                phone: "",
+                phone_number: "",
                 date_of_birth: "",
                 role: "",
             });
@@ -196,11 +196,11 @@ const RegisterPage: React.FC = () => {
             <CustomInput
                 placeholder="Phone"
                 type="tel"
-                name="phone"
-                value={formData.phone}
+                name="phone_number"
+                value={formData.phone_number}
                 onChange={handleInputChange}
                 width="100%"
-                error={errors.phone}
+                error={errors.phone_number}
             />
             <CustomInput
                 placeholder="Date of birth"
@@ -212,7 +212,7 @@ const RegisterPage: React.FC = () => {
                 error={errors.date_of_birth}
             />
             <Dropdown
-                options={["Master", "Client"]}
+                options={["master", "client"]}
                 value={formData.role}
                 onChange={handleDropdownChange}
             />
