@@ -14,19 +14,17 @@ const MasterPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchMasterData = async () => {
+        (async () => {
             try {
-                const masterResponse = await fetch(`/masters/${masterId}`);
+                const masterResponse = await fetch(`http://127.0.0.1:5000/masters/${masterId}`);
                 const masterData = await masterResponse.json();
                 setMaster(masterData);
-                setLoading(false);
             } catch (error) {
                 console.error("Error fetching master data:", error);
+            } finally {
                 setLoading(false);
             }
-        };
-
-        fetchMasterData();
+        })();
     }, [masterId]);
 
     if (loading) {

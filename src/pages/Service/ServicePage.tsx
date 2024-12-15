@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // Додано useNavigate
+import { useParams, useNavigate } from "react-router-dom";
 import {
     ServicePageContainer,
     BackgroundImage,
@@ -9,12 +9,12 @@ import {
     SpecialistCard,
     SeeMoreButton,
 } from "./ServicePage.styles";
-import api from "../../api"; // axios instance for API requests
+import api from "../../api";
 import Header from "../../components/Header/Header";
 import { useAuth } from "../../context/AuthContext";
 
 interface Specialist {
-    id: number;
+    id: number; // id майстра з таблиці Master
     name: string;
     age: number;
     bio: string;
@@ -32,7 +32,7 @@ const ServicePage: React.FC = () => {
     const { serviceId } = useParams<{ serviceId: string }>();
     const [service, setService] = useState<Service | null>(null);
     const { isAuthenticated } = useAuth();
-    const navigate = useNavigate(); // Для перенаправлення
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchService = async () => {
@@ -69,7 +69,7 @@ const ServicePage: React.FC = () => {
                             <h3>{specialist.name}</h3>
                             <p>Age: {specialist.age}</p>
                             <p>{specialist.bio}</p>
-                            {/* Оновлено логіку кнопки */}
+                            {/* Передаємо ID майстра (Master.id), а не user.id */}
                             <SeeMoreButton onClick={() => navigate(`/masters/${specialist.id}`)}>
                                 See more
                             </SeeMoreButton>
