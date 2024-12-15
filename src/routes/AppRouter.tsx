@@ -23,7 +23,7 @@ const AppRouter = () => {
                 path="/profile"
                 element={
                     isAuthenticated ? (
-                        <ProfilePage role={role} />
+                        <ProfilePage />
                     ) : (
                         <Navigate to="/login" />
                     )

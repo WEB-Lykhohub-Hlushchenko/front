@@ -9,29 +9,34 @@ import {
 import Header from "../../components/Header/Header";
 import { useAuth } from "../../context/AuthContext";
 import { useParams } from "react-router-dom";
+import api from "../../api";
 
 const MasterPage: React.FC = () => {
-    const { isAuthenticated, userId } = useAuth(); // Отримуємо userId з AuthContext
+    const { isAuthenticated, userId } = useAuth();
     const { masterId } = useParams<{ masterId: string }>();
     const [master, setMaster] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedTime, setSelectedTime] = useState("");
-    const [timeslots] = useState([
-        "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00",
-    ]);
+    const [freeTimes, setFreeTimes] = useState<string[]>([]);
 
     const today = new Date().toISOString().split("T")[0];
 
-    // Fetching master data
+    // Fetch master data and free times
     useEffect(() => {
         const fetchMasterData = async () => {
             try {
+                // Отримуємо інформацію про майстра
                 const masterResponse = await fetch(`http://127.0.0.1:5000/masters/${masterId}`);
                 const masterData = await masterResponse.json();
                 setMaster(masterData);
+
+                // Отримуємо доступний вільний час
+                const freeTimeResponse = await fetch(`http://127.0.0.1:5000/masters/${masterId}/free-times`);
+                const freeTimeData = await freeTimeResponse.json();
+                setFreeTimes(freeTimeData.free_times || []); // Витягуємо free_times з об'єкта
             } catch (error) {
-                console.error("Error fetching master data:", error);
+                console.error("Error fetching data:", error);
             } finally {
                 setLoading(false);
             }
@@ -55,27 +60,18 @@ const MasterPage: React.FC = () => {
             return;
         }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const selectedDateObj = new Date(selectedDate);
-
-        if (!selectedDate || selectedDateObj < today) {
-            alert("Please select a valid future date.");
+        if (!selectedDate || !selectedTime) {
+            alert("Please select a valid date and time for your appointment.");
             return;
         }
+        const masterIdResponse = await api.get(`/masters/${userId}`)
 
-        if (!selectedTime) {
-            alert("Please select a time for your appointment.");
-            return;
-        }
 
-        // Формуємо запит на створення бронювання
         const bookingData = {
-            user_id: userId, // Додаємо userId з AuthContext
-            master_id: master.id,
-            service_id: master.service_id, // Зберігаємо service_id з майстра
+            user_id: userId,
+            master_id: masterIdResponse.data.master_id,
+            service_id: masterIdResponse.data.service_id,
             booking_datetime: `${selectedDate} ${selectedTime}`,
-            status: "pending",
         };
 
         try {
@@ -89,10 +85,8 @@ const MasterPage: React.FC = () => {
 
             if (response.ok) {
                 alert(`Appointment confirmed for ${selectedDate} at ${selectedTime}`);
-                console.log("Booking successful:", await response.json());
             } else {
                 const errorData = await response.json();
-                console.error("Error:", errorData);
                 alert("Failed to make an appointment: " + errorData.error);
             }
         } catch (error) {
@@ -109,6 +103,10 @@ const MasterPage: React.FC = () => {
         return <p>Master not found.</p>;
     }
 
+    const availableTimes = freeTimes.filter((time) =>
+        time.startsWith(selectedDate)
+    );
+
     return (
         <>
             <Header isAuthenticated={isAuthenticated} />
@@ -123,7 +121,6 @@ const MasterPage: React.FC = () => {
                     </div>
                 </MasterInfo>
 
-                {/* Перевірка авторизації перед відображенням секції */}
                 {isAuthenticated ? (
                     <AppointmentSection>
                         <h3>Choose Date and Time for Appointment</h3>
@@ -136,15 +133,22 @@ const MasterPage: React.FC = () => {
                         {selectedDate && (
                             <div>
                                 <h4>Available Timeslots:</h4>
-                                {timeslots.map((time) => (
-                                    <TimeSlot
-                                        key={time}
-                                        isSelected={selectedTime === time}
-                                        onClick={() => handleTimeSelect(time)}
-                                    >
-                                        {time}
-                                    </TimeSlot>
-                                ))}
+                                {availableTimes.length > 0 ? (
+                                    availableTimes.map((time) => {
+                                        const displayTime = time.split(" ")[1]; // Відображаємо тільки час
+                                        return (
+                                            <TimeSlot
+                                                key={time}
+                                                isSelected={selectedTime === displayTime}
+                                                onClick={() => handleTimeSelect(displayTime)}
+                                            >
+                                                {displayTime}
+                                            </TimeSlot>
+                                        );
+                                    })
+                                ) : (
+                                    <p>No available times for this date.</p>
+                                )}
                             </div>
                         )}
                         <ConfirmButton onClick={handleAppointment}>Make an Appointment</ConfirmButton>
