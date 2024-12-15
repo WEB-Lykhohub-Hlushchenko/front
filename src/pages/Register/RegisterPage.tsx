@@ -62,9 +62,9 @@ const RegisterPage: React.FC = () => {
     });
 
     const [isFormValid, setIsFormValid] = useState(false);
-    const [loading, setLoading] = useState(false); // Стан завантаження
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { setIsAuthenticated, setRole } = useAuth(); // Оновлення глобального контексту
+    const { setIsAuthenticated, setRole } = useAuth();
 
     // Завантаження сервісів
     useEffect(() => {
@@ -76,7 +76,6 @@ const RegisterPage: React.FC = () => {
                 console.error("Failed to fetch services", error);
             }
         };
-
         fetchServices();
     }, []);
 
@@ -138,40 +137,18 @@ const RegisterPage: React.FC = () => {
     };
 
     const handleRegister = async () => {
-        if (!isFormValid) return;
+        const payload = { ...formData };
+        if (payload.role === "client") {
+            delete payload.service_id; // Видаляємо service_id, якщо це клієнт
+        }
 
-        setLoading(true); // Увімкнути стан завантаження
+        setLoading(true);
         try {
-            const response = await api.post("/auth/register", formData);
+            const response = await api.post("/auth/register", payload);
             console.log("Registration successful:", response.data);
 
-            setFormData({
-                email: "",
-                password: "",
-                first_name: "",
-                last_name: "",
-                phone_number: "",
-                date_of_birth: "",
-                role: "",
-                service_id: "",
-            });
-
-            setErrors({
-                email: "",
-                password: "",
-                first_name: "",
-                last_name: "",
-                phone_number: "",
-                date_of_birth: "",
-                role: "",
-                service_id: "",
-                global: "",
-            });
-
-            // Оновлення контексту після успішної реєстрації
             setIsAuthenticated(true);
             setRole(formData.role);
-
             navigate("/");
         } catch (error: any) {
             console.error("Registration error:", error.response?.data);
@@ -180,13 +157,16 @@ const RegisterPage: React.FC = () => {
                 global: error.response?.data?.error || "Registration failed",
             }));
         } finally {
-            setLoading(false); // Вимкнути стан завантаження
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         const hasErrors = Object.values(errors).some((error) => error !== "");
-        const hasEmptyFields = Object.values(formData).some((value) => value === "");
+        const hasEmptyFields = Object.entries(formData).some(([key, value]) => {
+            if (formData.role === "client" && key === "service_id") return false;
+            return value === "";
+        });
         setIsFormValid(!hasErrors && !hasEmptyFields);
     }, [formData, errors]);
 

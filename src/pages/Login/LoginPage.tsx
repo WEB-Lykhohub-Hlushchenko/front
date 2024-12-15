@@ -17,9 +17,9 @@ const LoginPage: React.FC = () => {
         password: "",
     });
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(false); // Додаємо стан завантаження
+    const [loading, setLoading] = useState<boolean>(false); // Стан завантаження
     const navigate = useNavigate();
-    const { setIsAuthenticated, setRole } = useAuth(); // Оновлення AuthContext
+    const { setIsAuthenticated, setRole, setUserId } = useAuth(); // Додано setUserId
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -33,16 +33,17 @@ const LoginPage: React.FC = () => {
             return;
         }
 
-        setLoading(true); // Увімкнути лоадер
+        setLoading(true); // Увімкнути стан завантаження
         try {
             const response = await api.post("/auth/login", formData);
 
             console.log("Login successful:", response.data);
-            setError(null); // Очищення помилок після успішного логіну
+            setError(null); // Очищення помилок після успішного входу
 
             // Оновлення контексту авторизації
             setIsAuthenticated(true);
-            setRole(response.data.user.role); // Припускаємо, що бекенд повертає роль у `user.role`
+            setRole(response.data.user.role); // Роль користувача
+            setUserId(response.data.user.id); // ID користувача
 
             // Залежно від ролі перенаправляємо на відповідну сторінку
             if (response.data.redirect) {
@@ -54,7 +55,7 @@ const LoginPage: React.FC = () => {
             console.error("Login error:", error.response?.data);
             setError(error.response?.data?.error || "Login failed");
         } finally {
-            setLoading(false); // Вимкнути лоадер
+            setLoading(false); // Вимкнути стан завантаження
         }
     };
 
@@ -89,9 +90,9 @@ const LoginPage: React.FC = () => {
                 borderRadius="16"
                 height="50"
                 onClick={handleLogin}
-                disabled={loading} // Деактивуємо кнопку, якщо триває запит
+                disabled={loading} // Вимкнення кнопки під час запиту
             >
-                {loading ? "Signing in..." : "Sign in"} {/* Текст кнопки залежно від стану */}
+                {loading ? "Signing in..." : "Sign in"}
             </Button>
         </LoginFormContainer>
     );

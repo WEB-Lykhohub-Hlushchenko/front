@@ -60,6 +60,14 @@ export const AppointmentSection = styled.div`
     margin-bottom: 20px;
   }
 
+  input {
+    margin: 10px 0;
+    padding: 8px 10px;
+    font-size: 1rem;
+    border: 1px solid var(--secondary);
+    border-radius: 5px;
+  }
+
   div {
     display: flex;
     flex-wrap: wrap;
@@ -67,6 +75,7 @@ export const AppointmentSection = styled.div`
     justify-content: center;
   }
 `;
+
 
 export const TimeSlot = styled.button<{ isSelected?: boolean }>`
   padding: 10px 20px;
