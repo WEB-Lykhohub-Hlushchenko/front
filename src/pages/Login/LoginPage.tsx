@@ -17,9 +17,9 @@ const LoginPage: React.FC = () => {
         password: "",
     });
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(false); // Стан завантаження
+    const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
-    const { setIsAuthenticated, setRole, setUserId } = useAuth(); // Додано setUserId
+    const { setIsAuthenticated, setRole, setUserId } = useAuth(); // Додаємо setUserId
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -27,7 +27,6 @@ const LoginPage: React.FC = () => {
     };
 
     const handleLogin = async () => {
-        // Перевірка на порожні поля
         if (!formData.email || !formData.password) {
             setError("Please fill in all fields.");
             return;
@@ -38,19 +37,13 @@ const LoginPage: React.FC = () => {
             const response = await api.post("/auth/login", formData);
 
             console.log("Login successful:", response.data);
-            setError(null); // Очищення помилок після успішного входу
 
-            // Оновлення контексту авторизації
+            // Оновлюємо AuthContext
             setIsAuthenticated(true);
-            setRole(response.data.user.role); // Роль користувача
-            setUserId(response.data.user.id); // ID користувача
+            setRole(response.data.user.role); // Зберігаємо роль
+            setUserId(response.data.user.id); // Зберігаємо userId
 
-            // Залежно від ролі перенаправляємо на відповідну сторінку
-            if (response.data.redirect) {
-                navigate(response.data.redirect);
-            } else {
-                navigate("/"); // За замовчуванням на головну сторінку
-            }
+            navigate(response.data.redirect || "/");
         } catch (error: any) {
             console.error("Login error:", error.response?.data);
             setError(error.response?.data?.error || "Login failed");
@@ -90,7 +83,7 @@ const LoginPage: React.FC = () => {
                 borderRadius="16"
                 height="50"
                 onClick={handleLogin}
-                disabled={loading} // Вимкнення кнопки під час запиту
+                disabled={loading}
             >
                 {loading ? "Signing in..." : "Sign in"}
             </Button>

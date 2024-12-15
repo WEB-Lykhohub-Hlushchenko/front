@@ -11,7 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useParams } from "react-router-dom";
 
 const MasterPage: React.FC = () => {
-    const { isAuthenticated, userId } = useAuth(); // Додаємо userId з контексту
+    const { isAuthenticated, userId } = useAuth(); // Отримуємо userId з AuthContext
     const { masterId } = useParams<{ masterId: string }>();
     const [master, setMaster] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -23,6 +23,7 @@ const MasterPage: React.FC = () => {
 
     const today = new Date().toISOString().split("T")[0];
 
+    // Fetching master data
     useEffect(() => {
         const fetchMasterData = async () => {
             try {
@@ -49,7 +50,7 @@ const MasterPage: React.FC = () => {
     };
 
     const handleAppointment = async () => {
-        if (!isAuthenticated) {
+        if (!isAuthenticated || !userId) {
             alert("You must be logged in to make an appointment.");
             return;
         }
@@ -68,11 +69,11 @@ const MasterPage: React.FC = () => {
             return;
         }
 
-        // Формуємо `service_id` з даних майстра
+        // Формуємо запит на створення бронювання
         const bookingData = {
-            user_id: 19, // Отримайте з AuthContext або глобального стейту
+            user_id: userId, // Додаємо userId з AuthContext
             master_id: master.id,
-            service_id: master.service_id, // Додаємо service_id
+            service_id: master.service_id, // Зберігаємо service_id з майстра
             booking_datetime: `${selectedDate} ${selectedTime}`,
             status: "pending",
         };
@@ -99,7 +100,6 @@ const MasterPage: React.FC = () => {
             alert("An error occurred while making the appointment.");
         }
     };
-
 
     if (loading) {
         return <p>Loading...</p>;
