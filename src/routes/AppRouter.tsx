@@ -19,6 +19,8 @@ const AppRouter = () => {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/services/:serviceId" element={<ServicePage />} />
             <Route path="/masters/:masterId" element={<MasterPage />} />
+
+            {/* Маршрут для профілю */}
             <Route
                 path="/profile"
                 element={
@@ -29,10 +31,14 @@ const AppRouter = () => {
                     )
                 }
             />
+
+            {/* Маршрут для адмін-панелі */}
             <Route
                 path="/admin"
                 element={role === "admin" ? <AdminPage /> : <Navigate to="/" />}
             />
+
+            {/* Якщо сторінка не знайдена */}
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>
     );

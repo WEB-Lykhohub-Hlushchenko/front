@@ -14,10 +14,10 @@ import api from "../../api";
 const ProfilePage: React.FC = () => {
     const { role, userId, setIsAuthenticated, setRole, setUserId } = useAuth();
     const [userInfo, setUserInfo] = useState<any>(null);
-    const [masterId, setMasterId] = useState<number | null>(null); // Додаємо masterId
+    const [masterId, setMasterId] = useState<number | null>(null);
     const [appointments, setAppointments] = useState<any[]>([]);
     const [freeTimes, setFreeTimes] = useState<string[]>([]);
-    const [bio, setBio] = useState<string>("");
+    const [bio, setBio] = useState<string>(""); // Додано біографію
     const [clients, setClients] = useState<any[]>([]);
     const [newFreeTime, setNewFreeTime] = useState<string>("");
 
@@ -35,6 +35,7 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
+                // Отримання загальної інформації користувача
                 const response = await api.get(`/users/${userId}`);
                 const data = response.data;
 
@@ -44,22 +45,22 @@ const ProfilePage: React.FC = () => {
                 });
 
                 if (role === "master") {
-                    // Fetch the masterId
+                    // Отримуємо Master ID
                     const masterResponse = await api.get(`/masters/${userId}`);
-                    setMasterId(masterResponse.data.master_id);
+                    const masterData = masterResponse.data;
 
-                    // Fetch free times and clients only after masterId is set
-                    if (masterResponse.data.master_id) {
-                        const freeTimeResponse = await api.get(`/masters/${masterResponse.data.master_id}/free-times`);
-                        setFreeTimes(Array.isArray(freeTimeResponse.data) ? freeTimeResponse.data : []); // Гарантуємо масив
+                    setMasterId(masterData.master_id);
+                    setBio(masterData.bio || ""); // Завантажуємо біографію
 
-                        const clientsResponse = await api.get(`/masters/${masterResponse.data.master_id}/appointments`);
+                    // Завантажуємо вільний час
+                    const freeTimeResponse = await api.get(`/masters/${masterData.master_id}/free-times`);
+                    setFreeTimes(Array.isArray(freeTimeResponse.data) ? freeTimeResponse.data : []);
 
-                        setClients(clientsResponse.data);
-                        setBio(data.bio || "");
-                    }
+                    // Завантажуємо клієнтів
+                    const clientsResponse = await api.get(`/masters/${masterData.master_id}/appointments`);
+                    setClients(clientsResponse.data);
                 } else if (role === "client") {
-                    const appointmentsResponse = await api.get(`/clients/${userId}/appointments`);
+                    const appointmentsResponse = await api.get(`/bookings/client/${userId}/appointments`);
                     setAppointments(appointmentsResponse.data);
                 }
             } catch (error) {
@@ -69,7 +70,6 @@ const ProfilePage: React.FC = () => {
 
         fetchProfileData();
     }, [role, userId]);
-
 
     const handleLogout = () => {
         setIsAuthenticated(false);
@@ -104,18 +104,25 @@ const ProfilePage: React.FC = () => {
 
         try {
             await api.post(`/masters/${masterId}/free-times`, { free_time: newFreeTime });
-            setFreeTimes([...freeTimes, newFreeTime]);
-            setNewFreeTime("");
-            alert("Free time added successfully.");
+            const updatedFreeTimes = await api.get(`/masters/${masterId}/free-times`);
+            setFreeTimes(updatedFreeTimes.data.free_times || []); // Оновлюємо список
+
+            setNewFreeTime(""); // Очищаємо інпут
+            alert("Free time added/updated successfully.");
         } catch (error) {
-            console.error("Error adding free time:", error);
+            console.error("Error updating free time:", error);
         }
     };
 
-    const handleCancelClientAppointment = async (appointmentId: number) => {
+
+    const handleCancelAppointment = async (appointmentId: number) => {
         try {
             await api.delete(`/bookings/${appointmentId}`);
-            setClients(clients.filter((appt) => appt.id !== appointmentId));
+            if (role === "master") {
+                setClients(clients.filter((appt) => appt.id !== appointmentId));
+            } else if (role === "client") {
+                setAppointments(appointments.filter((appt) => appt.id !== appointmentId));
+            }
             alert("Appointment cancelled successfully.");
         } catch (error) {
             console.error("Error cancelling appointment:", error);
@@ -142,9 +149,10 @@ const ProfilePage: React.FC = () => {
                                         value={bio}
                                         onChange={(e) => setBio(e.target.value)}
                                         placeholder="Write your bio here"
+                                        style={{ width: "100%", marginTop: "10px" }}
                                     />
                                     <button onClick={handleBioUpdate} style={{ marginTop: "10px" }}>
-                                        OK
+                                        Update Bio
                                     </button>
                                 </>
                             )}
@@ -160,6 +168,7 @@ const ProfilePage: React.FC = () => {
                     <>
                         <FreeTimeSection>
                             <h2>Your Free Time</h2>
+                            <p>Enter free times separated by commas (e.g., 2025-02-02 08:00, 09:00, 10:00)</p>
                             <ul>
                                 {Array.isArray(freeTimes) && freeTimes.map((time, index) => (
                                     <li key={index}>{time}</li>
@@ -170,10 +179,11 @@ const ProfilePage: React.FC = () => {
                                 type="text"
                                 value={newFreeTime}
                                 onChange={(e) => setNewFreeTime(e.target.value)}
-                                placeholder="Add free time (e.g., 12.12.2024 09:00)"
+                                placeholder="Enter free times separated by commas"
                             />
-                            <button onClick={handleAddFreeTime}>Add</button>
+                            <button onClick={handleAddFreeTime}>Add Free Time</button>
                         </FreeTimeSection>
+
 
                         <AppointmentSection>
                             <h2>Your Clients</h2>
@@ -187,7 +197,7 @@ const ProfilePage: React.FC = () => {
                                             <strong>Date & Time:</strong>{" "}
                                             {new Date(appt.booking_datetime).toLocaleString()}
                                         </p>
-                                        <button onClick={() => handleCancelClientAppointment(appt.id)}>
+                                        <button onClick={() => handleCancelAppointment(appt.id)}>
                                             Cancel Appointment
                                         </button>
                                     </AppointmentCard>
@@ -196,8 +206,31 @@ const ProfilePage: React.FC = () => {
                                 <p>No clients have booked yet.</p>
                             )}
                         </AppointmentSection>
-
                     </>
+                )}
+
+                {role === "client" && (
+                    <AppointmentSection>
+                        <h2>Your Appointments</h2>
+                        {appointments.length > 0 ? (
+                            appointments.map((appt) => (
+                                <AppointmentCard key={appt.id}>
+                                    <p>
+                                        <strong>Master Name:</strong> {appt.master_name}
+                                    </p>
+                                    <p>
+                                        <strong>Date & Time:</strong>{" "}
+                                        {new Date(appt.booking_datetime).toLocaleString()}
+                                    </p>
+                                    <button onClick={() => handleCancelAppointment(appt.id)}>
+                                        Cancel Appointment
+                                    </button>
+                                </AppointmentCard>
+                            ))
+                        ) : (
+                            <p>You have no appointments yet.</p>
+                        )}
+                    </AppointmentSection>
                 )}
             </ProfileContainer>
         </>

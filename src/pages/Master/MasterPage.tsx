@@ -13,7 +13,7 @@ import api from "../../api";
 
 const MasterPage: React.FC = () => {
     const { isAuthenticated, userId } = useAuth();
-    const { masterId } = useParams<{ masterId: string }>();
+    const { masterId } = useParams<{ masterId: string }>(); // Тут ід з URL (master_id)
     const [master, setMaster] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [selectedDate, setSelectedDate] = useState("");
@@ -22,21 +22,30 @@ const MasterPage: React.FC = () => {
 
     const today = new Date().toISOString().split("T")[0];
 
-    // Fetch master data and free times
     useEffect(() => {
         const fetchMasterData = async () => {
             try {
-                // Отримуємо інформацію про майстра
-                const masterResponse = await fetch(`http://127.0.0.1:5000/masters/${masterId}`);
-                const masterData = await masterResponse.json();
-                setMaster(masterData);
+                setLoading(true);
 
-                // Отримуємо доступний вільний час
-                const freeTimeResponse = await fetch(`http://127.0.0.1:5000/masters/${masterId}/free-times`);
-                const freeTimeData = await freeTimeResponse.json();
-                setFreeTimes(freeTimeData.free_times || []); // Витягуємо free_times з об'єкта
+                // Отримуємо user_id через masterId
+                const masterMappingResponse = await api.get(`/masters`);
+                const masterMapping = masterMappingResponse.data;
+
+                const masterEntry = masterMapping.find((m: any) => m.id === parseInt(masterId || "0"));
+                if (!masterEntry) {
+                    throw new Error("Master not found");
+                }
+                const userIdFromMaster = masterEntry.user_id;
+
+                // Отримуємо інформацію про майстра
+                const masterResponse = await api.get(`/masters/${userIdFromMaster}`);
+                setMaster(masterResponse.data);
+
+                // Отримуємо доступний вільний час (фільтрований)
+                const freeTimeResponse = await api.get(`/masters/${masterId}/free-times/filtered`);
+                setFreeTimes(freeTimeResponse.data.free_times || []);
             } catch (error) {
-                console.error("Error fetching data:", error);
+                console.error("Error fetching master data:", error);
             } finally {
                 setLoading(false);
             }
@@ -45,12 +54,14 @@ const MasterPage: React.FC = () => {
         fetchMasterData();
     }, [masterId]);
 
+
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedDate(e.target.value);
+        setSelectedDate(e.target.value || ""); // Гарантуємо, що значення не буде undefined
         setSelectedTime("");
     };
 
-    const handleTimeSelect = (time: string) => {
+    const handleTimeSelect = (time: string | undefined) => {
+        if (!time) return; // Перевіряємо, щоб time не був undefined
         setSelectedTime(time);
     };
 
@@ -64,36 +75,32 @@ const MasterPage: React.FC = () => {
             alert("Please select a valid date and time for your appointment.");
             return;
         }
-        const masterIdResponse = await api.get(`/masters/${userId}`)
-
 
         const bookingData = {
             user_id: userId,
-            master_id: masterIdResponse.data.master_id,
-            service_id: masterIdResponse.data.service_id,
+            master_id: master.master_id, // Використовуємо master_id з бекенду
+            service_id: master.service_id,
             booking_datetime: `${selectedDate} ${selectedTime}`,
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/bookings/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(bookingData),
-            });
-
-            if (response.ok) {
+            const response = await api.post("/bookings/", bookingData);
+            if (response.status === 201) {
                 alert(`Appointment confirmed for ${selectedDate} at ${selectedTime}`);
             } else {
-                const errorData = await response.json();
-                alert("Failed to make an appointment: " + errorData.error);
+                // Використовуємо response.data для обробки відповіді
+                alert("Failed to make an appointment: " + response.data.error);
             }
-        } catch (error) {
-            console.error("Network error:", error);
-            alert("An error occurred while making the appointment.");
+        } catch (error: any) {
+            console.error("Error making appointment:", error);
+            if (error.response) {
+                alert("Error: " + error.response.data.error);
+            } else {
+                alert("An error occurred while making the appointment.");
+            }
         }
     };
+
 
     if (loading) {
         return <p>Loading...</p>;
@@ -103,9 +110,8 @@ const MasterPage: React.FC = () => {
         return <p>Master not found.</p>;
     }
 
-    const availableTimes = freeTimes.filter((time) =>
-        time.startsWith(selectedDate)
-    );
+    const availableTimes = freeTimes.filter((time) => time.startsWith(selectedDate));
+
 
     return (
         <>
@@ -115,8 +121,8 @@ const MasterPage: React.FC = () => {
                 <MasterInfo>
                     <div>
                         <h2>{master.first_name} {master.last_name}</h2>
-                        <p><strong>Phone:</strong> {master.phone_number}</p>
-                        <p><strong>Email:</strong> {master.email}</p>
+                        <p><strong>Phone:</strong> {master.phone_number || "Not provided"}</p>
+                        <p><strong>Email:</strong> {master.email || "Not provided"}</p>
                         <p><strong>Bio:</strong> {master.bio || "No bio available"}</p>
                     </div>
                 </MasterInfo>
@@ -135,7 +141,7 @@ const MasterPage: React.FC = () => {
                                 <h4>Available Timeslots:</h4>
                                 {availableTimes.length > 0 ? (
                                     availableTimes.map((time) => {
-                                        const displayTime = time.split(" ")[1]; // Відображаємо тільки час
+                                        const displayTime = time.split(" ")[1]; // Витягуємо годину
                                         return (
                                             <TimeSlot
                                                 key={time}
@@ -151,6 +157,7 @@ const MasterPage: React.FC = () => {
                                 )}
                             </div>
                         )}
+
                         <ConfirmButton onClick={handleAppointment}>Make an Appointment</ConfirmButton>
                     </AppointmentSection>
                 ) : (

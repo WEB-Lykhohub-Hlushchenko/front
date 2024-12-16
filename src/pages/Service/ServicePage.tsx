@@ -18,7 +18,6 @@ interface Specialist {
     name: string;
     age: number;
     bio: string;
-    image: string;
 }
 
 interface Service {
@@ -65,7 +64,6 @@ const ServicePage: React.FC = () => {
                 <SpecialistContainer>
                     {service.specialists.map((specialist) => (
                         <SpecialistCard key={specialist.id}>
-                            <img src={specialist.image} alt={specialist.name} />
                             <h3>{specialist.name}</h3>
                             <p>Age: {specialist.age}</p>
                             <p>{specialist.bio}</p>

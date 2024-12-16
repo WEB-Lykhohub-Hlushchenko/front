@@ -32,25 +32,30 @@ const LoginPage: React.FC = () => {
             return;
         }
 
-        setLoading(true); // Увімкнути стан завантаження
+        setLoading(true);
         try {
             const response = await api.post("/auth/login", formData);
 
             console.log("Login successful:", response.data);
 
+            // Зберігаємо роль і email в localStorage
+            localStorage.setItem("role", response.data.user.role);
+            localStorage.setItem("email", response.data.user.email);
+
             // Оновлюємо AuthContext
             setIsAuthenticated(true);
-            setRole(response.data.user.role); // Зберігаємо роль
-            setUserId(response.data.user.id); // Зберігаємо userId
+            setRole(response.data.user.role);
+            setUserId(response.data.user.id);
 
             navigate(response.data.redirect || "/");
         } catch (error: any) {
             console.error("Login error:", error.response?.data);
             setError(error.response?.data?.error || "Login failed");
         } finally {
-            setLoading(false); // Вимкнути стан завантаження
+            setLoading(false);
         }
     };
+
 
     return (
         <LoginFormContainer>
