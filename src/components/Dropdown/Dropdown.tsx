@@ -25,7 +25,6 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, width }) 
     const [inputValue, setInputValue] = useState(
         options.find((option) => option.value === value)?.label || ""
     );
-
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Синхронізація value та inputValue
@@ -41,7 +40,6 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, width }) 
                 setIsOpen(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -71,8 +69,8 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, width }) 
                 onFocus={() => setIsOpen(true)}
                 placeholder="Select an option"
             />
-            <Icon onClick={toggleDropdown}>
-                {isOpen ? <FaTimes /> : <FaChevronDown />}
+            <Icon isOpen={isOpen} onClick={() => setIsOpen((prev) => !prev)}>
+                <FaChevronDown />
             </Icon>
             {isOpen && (
                 <OptionsList isOpen={isOpen}>
@@ -82,7 +80,6 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, width }) 
                         </Option>
                     ))}
                 </OptionsList>
-
             )}
         </DropdownContainer>
     );

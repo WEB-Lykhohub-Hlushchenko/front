@@ -6,9 +6,9 @@ interface InputProps {
     width?: string;
     type?: string;
     value?: string;
-    name?: string; // Додаємо name
+    name?: string;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    error?: string; // Додаємо error для відображення помилки
+    error?: string;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -26,14 +26,20 @@ const Input: React.FC<InputProps> = ({
         <InputContainer width={width}>
             <StyledInput
                 type={type}
-                name={name} // Передаємо name
+                name={name}
                 value={value}
                 onChange={onChange}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(!!value)}
             />
-            <Placeholder isFocused={isFocused || !!value}>{placeholder}</Placeholder>
-            {error && <div style={{ color: "red", fontSize: "12px", marginTop: "5px" }}>{error}</div>}
+            <Placeholder isFocused={isFocused || !!value}>
+                {placeholder}
+            </Placeholder>
+            {error && (
+                <div style={{ color: "red", fontSize: "12px", marginTop: "5px" }}>
+                    {error}
+                </div>
+            )}
         </InputContainer>
     );
 };

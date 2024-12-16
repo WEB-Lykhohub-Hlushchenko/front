@@ -1,5 +1,5 @@
-import React from "react";
-import { StyledInput, InputContainer, ErrorText } from "./CustomInput.styles";
+import React, { useState } from "react";
+import { StyledInput, InputContainer, ErrorText, Placeholder } from "./CustomInput.styles";
 
 interface CustomInputProps {
     placeholder: string;
@@ -8,7 +8,7 @@ interface CustomInputProps {
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     width?: string;
-    error?: string; // Додаємо цю властивість
+    error?: string;
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -20,15 +20,24 @@ const CustomInput: React.FC<CustomInputProps> = ({
                                                      width,
                                                      error,
                                                  }) => {
+    const [isFocused, setIsFocused] = useState(false);
+
     return (
         <InputContainer width={width}>
             <StyledInput
-                placeholder={placeholder}
                 type={type}
                 name={name}
                 value={value}
-                onChange={onChange}
+                onChange={(e) => {
+                    onChange(e);
+                    setIsFocused(!!e.target.value);
+                }}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(!!value)}
             />
+            <Placeholder isFocused={isFocused || !!value}>
+                {placeholder}
+            </Placeholder>
             {error && <ErrorText>{error}</ErrorText>}
         </InputContainer>
     );
